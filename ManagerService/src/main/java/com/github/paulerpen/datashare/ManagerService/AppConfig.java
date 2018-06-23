@@ -8,13 +8,15 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import org.springframework.cloud.client.discovery.DiscoveryClient;
+
 @EnableWebMvc
 @Configuration
 public class AppConfig {
 	
 	@Autowired
 	private Environment env;
-	
+
 	@Bean
 	public CommonsMultipartResolver filterMultipartResolver(){
 	    return new CommonsMultipartResolver();

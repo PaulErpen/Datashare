@@ -56,12 +56,13 @@ public class UploadController {
     @RequestMapping(value = "/hub", method = RequestMethod.GET)
     @ResponseBody
     public String listUploadedFiles(Model model,
-			HttpServletResponse response) throws IOException {
+			HttpServletResponse response,
+			MyLoadBalancer myLoadBalancer) throws IOException {
     	RestTemplate template = new RestTemplate();
-    	ServiceInstance instance =  discoveryClient.getInstances(requiredService).get(0);
-    	String url = instance.getUri()+"/hub";
-    	System.out.println(url);
-    	return template.getForObject(url, String.class);
+//    	ServiceInstance instance =  discoveryClient.getInstances(requiredService).get(0);
+//    	String url = instance.getUri()+"/hub";
+//    	System.out.println(url);
+    	return template.getForObject(myLoadBalancer.getConnectionURI(requiredService, "/hub",discoveryClient), String.class);
         /*model.addAttribute("files", storageService.loadAll().map(
                 path -> MvcUriComponentsBuilder.fromMethodName(UploadController.class,
                         "serveFile", path.getFileName().toString()).build().toString())
@@ -70,13 +71,14 @@ public class UploadController {
 
     @GetMapping("/files/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename,
+    		MyLoadBalancer myLoadBalancer) {
     	
     	RestTemplate template = new RestTemplate();
     	ServiceInstance instance =  discoveryClient.getInstances(requiredService).get(0);
     	String url = instance.getUri()+"/"+requiredService+"/files/"+filename;
     	System.out.println(url);
-    	return template.getForObject(url, ResponseEntity.class);
+    	return template.getForObject(myLoadBalancer.getConnectionURI(requiredService, "/"+requiredService+"/files/"+filename,discoveryClient), ResponseEntity.class);
     	
         /*Resource file = storageService.loadAsResource(filename);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
@@ -85,10 +87,11 @@ public class UploadController {
 
     @RequestMapping(value = "/hub", method = RequestMethod.POST)
     public String handleFileUpload(@RequestParam("file") MultipartFile file,
-            RedirectAttributes redirectAttributes) throws IOException {
+            RedirectAttributes redirectAttributes,
+            MyLoadBalancer myLoadBalancer) throws IOException {
     	
     	ServiceInstance instance =  discoveryClient.getInstances(requiredService).get(0);
-    	String url = instance.getUri()+"/upload";
+    	String url = myLoadBalancer.getConnectionURI(requiredService, "/upload",discoveryClient);
     	System.out.println(url);
     	
     	LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
