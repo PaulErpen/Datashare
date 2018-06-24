@@ -19,6 +19,7 @@
 	</parent>
 
 	<properties>
+		<spring.boot.mainclass>com.github.paulerpen.datashare.ManagerService.ManagerServiceApplication</spring.boot.mainclass>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
@@ -87,6 +88,17 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				
+				<executions>
+                <execution>
+                    <goals>
+                        <goal>repackage</goal>
+                    </goals>
+                    <configuration>
+                        <mainClass>${spring.boot.mainclass}</mainClass>
+                    </configuration>
+                </execution>
+            </executions>
 			</plugin>
 		</plugins>
 	</build>

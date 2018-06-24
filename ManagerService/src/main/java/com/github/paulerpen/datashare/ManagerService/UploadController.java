@@ -59,14 +59,7 @@ public class UploadController {
 			HttpServletResponse response,
 			MyLoadBalancer myLoadBalancer) throws IOException {
     	RestTemplate template = new RestTemplate();
-//    	ServiceInstance instance =  discoveryClient.getInstances(requiredService).get(0);
-//    	String url = instance.getUri()+"/hub";
-//    	System.out.println(url);
     	return template.getForObject(myLoadBalancer.getConnectionURI(requiredService, "/hub",discoveryClient), String.class);
-        /*model.addAttribute("files", storageService.loadAll().map(
-                path -> MvcUriComponentsBuilder.fromMethodName(UploadController.class,
-                        "serveFile", path.getFileName().toString()).build().toString())
-                .collect(Collectors.toList()));*/
     }
 
     @GetMapping("/files/{filename:.+}")
@@ -79,10 +72,6 @@ public class UploadController {
     	String url = instance.getUri()+"/"+requiredService+"/files/"+filename;
     	System.out.println(url);
     	return template.getForObject(myLoadBalancer.getConnectionURI(requiredService, "/"+requiredService+"/files/"+filename,discoveryClient), ResponseEntity.class);
-    	
-        /*Resource file = storageService.loadAsResource(filename);
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + file.getFilename() + "\"").body(file);*/
     }
 
     @RequestMapping(value = "/hub", method = RequestMethod.POST)
@@ -95,7 +84,6 @@ public class UploadController {
     	System.out.println(url);
     	
     	LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-    	//byte[] fileBytes = file.getBytes();
     	String fileName = file.getOriginalFilename();
     	System.out.println(fileName);
     	ByteArrayResource contentsAsResource = new ByteArrayResource(file.getBytes()){
@@ -112,13 +100,6 @@ public class UploadController {
         
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);//    	try {
-        return "redirect:/hub";
-        //    		storageService.store(file);
-//            redirectAttributes.addFlashAttribute("message",
-//                    "You successfully uploaded " + file.getOriginalFilename() + ".");
-//    	}catch(StorageException e) {
-//    		redirectAttributes.addFlashAttribute("message", "Your file could not be uploaded.");
-//    	}
-//        
+        return "redirect:/hub";     
     }
 }
